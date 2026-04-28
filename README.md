@@ -1,52 +1,165 @@
 # FaceRecognitionBrain API
 
-FaceRecognitionBrain API is the Express backend for the FaceRecognitionBrain full-stack project. It handles authentication, password hashing, PostgreSQL database operations, and requests to Clarifai for face detection.
+A Node.js and Express backend API for the FaceRecognitionBrain full-stack application. This service handles authentication, PostgreSQL persistence, secure password hashing, user image-submission tracking, and server-side Clarifai face-detection requests.
 
-- Frontend repo: [facerecognitionbrain](https://github.com/brandonmay-dev/facerecognitionbrain)
-- Backend repo: [facerecognitionbrain-api](https://github.com/brandonmay-dev/facerecognitionbrain-api)
-- Live API: [safe-dawn-54877-2bdeb01ab080.herokuapp.com](https://safe-dawn-54877-2bdeb01ab080.herokuapp.com/)
+👉 **Frontend Repo:** https://github.com/brandonmay-dev/facerecognitionbrain
+👉 **Backend Repo:** https://github.com/brandonmay-dev/facerecognitionbrain-api
+👉 **Live API:** https://safe-dawn-54877-2bdeb01ab080.herokuapp.com/
 
-## What This API Does
+---
 
-- Registers new users
-- Signs users in with hashed password validation
-- Sends image URLs to Clarifai's face-detection model
-- Updates each user's image submission count
-- Returns profile data for a user
+## Why This Project Stands Out
+
+This backend demonstrates practical server-side development beyond basic CRUD operations.
+
+It supports a real React frontend, manages user data securely, communicates with a PostgreSQL database, protects third-party API credentials on the server, and acts as the bridge between the client and Clarifai’s AI face-detection model.
+
+---
+
+## Key Highlights
+
+- REST API built with Node.js and Express
+- User registration and sign-in flow
+- Password hashing with `bcryptjs`
+- PostgreSQL persistence with Knex
+- Server-side Clarifai API integration
+- User-specific image submission tracking
+- Environment-based configuration for local and deployed environments
+- CORS handling for frontend/backend communication
+
+---
+
+## What The API Does
+
+- Registers new users with hashed passwords
+- Authenticates returning users
+- Stores and retrieves user profile data
+- Sends submitted image URLs to Clarifai’s face-detection model
+- Returns AI detection data to the frontend
+- Increments each user’s image-processing count
+- Provides health-check endpoints for backend verification
+
+---
 
 ## Tech Stack
 
-- Node.js
-- Express
-- PostgreSQL
-- Knex
-- bcryptjs
-- dotenv
-- cors
+- **Node.js** – JavaScript runtime for backend development
+- **Express** – API routing and request handling
+- **PostgreSQL** – relational database for users and login data
+- **Knex** – SQL query builder for database operations
+- **bcryptjs** – password hashing and verification
+- **dotenv** – environment variable management
+- **cors** – frontend/backend request handling
 
-## Endpoints
+---
 
-- `GET /`
-- `GET /health/whoami`
-- `POST /register`
-- `POST /signin`
-- `POST /imageurl`
-- `PUT /image`
-- `GET /profile/:id`
+## Architecture Overview
 
-## Request Flow
+1. React frontend sends authentication or image-processing requests to the API
+2. Express receives the request and routes it to the appropriate handler
+3. Knex reads from or writes to PostgreSQL
+4. Passwords are hashed and verified with `bcryptjs`
+5. Image URLs are sent from the backend to Clarifai using a private API key
+6. API returns user data, Clarifai response data, or updated entry counts to the frontend
 
-1. The frontend sends auth or image requests to this API.
-2. The API validates the payload and queries PostgreSQL when needed.
-3. Passwords are hashed with `bcryptjs`.
-4. Face-detection requests are forwarded to Clarifai using a private API key stored in environment variables.
-5. The API returns user records, face-detection data, or updated entry counts back to the frontend.
+---
+
+## API Endpoints
+
+### `GET /`
+
+Health check endpoint for confirming the server is running.
+
+Example response:
+
+```json
+{
+  "ok": true
+}
+```
+
+---
+
+### `GET /health/whoami`
+
+Returns information about the connected PostgreSQL database and current database user.
+
+Useful for verifying database connectivity in deployed environments.
+
+---
+
+### `POST /register`
+
+Creates a new user and stores a hashed password.
+
+Example request:
+
+```json
+{
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "password": "supersecret"
+}
+```
+
+---
+
+### `POST /signin`
+
+Authenticates an existing user by comparing the submitted password against the stored password hash.
+
+Example request:
+
+```json
+{
+  "email": "jane@example.com",
+  "password": "supersecret"
+}
+```
+
+---
+
+### `POST /imageurl`
+
+Accepts a public image URL and forwards it to Clarifai’s face-detection model.
+
+The Clarifai API key is stored on the backend so it is never exposed in the frontend.
+
+Example request:
+
+```json
+{
+  "input": "https://example.com/face.jpg"
+}
+```
+
+---
+
+### `PUT /image`
+
+Increments the signed-in user’s image submission count.
+
+Example request:
+
+```json
+{
+  "id": 1
+}
+```
+
+---
+
+### `GET /profile/:id`
+
+Returns the stored profile data for a specific user.
+
+---
 
 ## Environment Variables
 
-Create a `.env` file in the project root with either local PostgreSQL settings or a deployment connection string.
+Create a `.env` file in the project root.
 
-### Local PostgreSQL setup
+### Local PostgreSQL Setup
 
 ```env
 CLARIFAI_PAT=your_clarifai_pat
@@ -58,13 +171,15 @@ DB_PASSWORD=your_postgres_password
 PORT=3001
 ```
 
-### Deployment-style database setup
+### Deployment Setup
 
 ```env
 CLARIFAI_PAT=your_clarifai_pat
 DATABASE_URL=your_database_url
 PORT=3001
 ```
+
+---
 
 ## Database Setup
 
@@ -74,9 +189,9 @@ Make sure PostgreSQL is running, then create the database:
 CREATE DATABASE smart-brain;
 ```
 
-This API currently expects PostgreSQL tables named `users` and `login`.
+This API expects `login` and `users` tables.
 
-### `login`
+### `login` Table
 
 ```sql
 CREATE TABLE login (
@@ -86,7 +201,7 @@ CREATE TABLE login (
 );
 ```
 
-### `users`
+### `users` Table
 
 ```sql
 CREATE TABLE users (
@@ -99,6 +214,8 @@ CREATE TABLE users (
 );
 ```
 
+---
+
 ## Local Development
 
 Install dependencies:
@@ -107,45 +224,66 @@ Install dependencies:
 npm install
 ```
 
-Run in development:
+Run in development mode:
 
 ```bash
 npm run dev
 ```
 
-Run in production:
+Run in production mode:
 
 ```bash
 npm start
 ```
 
-The API runs at `http://localhost:3001`.
+The API runs locally at:
+
+```txt
+http://localhost:3001
+```
+
+---
 
 ## Deployment Notes
 
-When deploying, provide `DATABASE_URL` and `CLARIFAI_PAT` through the host environment. If the frontend domain changes, update the backend CORS allowlist to include the deployed frontend origin.
+- `DATABASE_URL` is used automatically when present
+- SSL is enabled for hosted PostgreSQL connections
+- Clarifai credentials are kept on the server, not the frontend
+- CORS is configured to control which frontend origins can access the API
+- If the deployed frontend URL changes, update the backend CORS allowlist in `server.js`
+
+---
 
 ## What This Project Demonstrates
 
-- Building REST endpoints with Express
-- Structuring a backend around a separate frontend client
-- Hashing passwords securely instead of storing plain text
-- Querying PostgreSQL through Knex
-- Protecting third-party API credentials on the server
-- Managing CORS and deployment configuration
+- Building a REST API for a separate frontend client
+- Implementing authentication with hashed passwords
+- Working with relational data using PostgreSQL and Knex
+- Protecting third-party API secrets on the server
+- Integrating external AI services into backend workflows
+- Managing local and production environment configuration
+- Supporting deployment-specific database behavior
 
-## Good Next Improvements
+---
 
-- Add migrations and seed files
-- Add request validation middleware
-- Add automated tests for auth and image routes
-- Move the CORS allowlist into environment configuration
-- Split route logic into controllers and services for cleaner scaling
-- Add rate limiting and request logging
+## Future Improvements
+
+- Add database migrations and seed files
+- Add validation middleware for request bodies
+- Add automated route and integration tests
+- Move CORS allowlist values into environment variables
+- Split `server.js` into routes, controllers, and services
+- Add centralized error handling
+- Add logging and rate limiting
+- Add token-based authentication with JWT or sessions
+
+---
 
 ## Author
 
 Brandon May
+
+---
 
 ## License
 
