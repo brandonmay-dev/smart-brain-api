@@ -1,240 +1,151 @@
-# Smart Brain API (Backend)
+# FaceRecognitionBrain API
 
-A Node.js + Express API that powers the Smart Brain application.
-Handles user authentication, database interactions, and AI image processing.
+FaceRecognitionBrain API is the Express backend for the FaceRecognitionBrain full-stack project. It handles authentication, password hashing, PostgreSQL database operations, and requests to Clarifai for face detection.
 
----
+- Frontend repo: [facerecognitionbrain](https://github.com/brandonmay-dev/facerecognitionbrain)
+- Backend repo: [facerecognitionbrain-api](https://github.com/brandonmay-dev/facerecognitionbrain-api)
+- Live API: [safe-dawn-54877-2bdeb01ab080.herokuapp.com](https://safe-dawn-54877-2bdeb01ab080.herokuapp.com/)
 
-## Live API
+## What This API Does
 
-https://safe-dawn-54877-2bdeb01ab080.herokuapp.com/
-
----
+- Registers new users
+- Signs users in with hashed password validation
+- Sends image URLs to Clarifai's face-detection model
+- Updates each user's image submission count
+- Returns profile data for a user
 
 ## Tech Stack
 
-* Node.js
-* Express.js
-* PostgreSQL
-* bcrypt (password hashing)
-* Knex.js (query builder)
-* REST API
-* Deployed on Heroku
+- Node.js
+- Express
+- PostgreSQL
+- Knex
+- bcryptjs
+- dotenv
+- cors
 
----
+## Endpoints
 
-## Features
+- `GET /`
+- `GET /health/whoami`
+- `POST /register`
+- `POST /signin`
+- `POST /imageurl`
+- `PUT /image`
+- `GET /profile/:id`
 
-* User registration
-* Secure password hashing
-* User sign-in authentication
-* Profile retrieval
-* Image entry tracking
-* AI face detection integration (Clarifai)
+## Request Flow
 
----
-
-## API Endpoints
-
-### Authentication
-
-#### POST `/register`
-
-Registers a new user
-
-```json id="e0a2v6"
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "123"
-}
-```
-
----
-
-#### POST `/signin`
-
-Signs in an existing user
-
-```json id="2yks9p"
-{
-  "email": "john@example.com",
-  "password": "123"
-}
-```
-
----
-
-### User
-
-#### GET `/profile/:id`
-
-Returns user profile
-
----
-
-### Image Processing
-
-#### PUT `/image`
-
-Updates user's entry count
-
-#### POST `/imageurl`
-
-Sends image to Clarifai API for face detection
-
----
-
-## Installation
-
-Clone the repo:
-
-```bash id="q9y6md"
-git clone https://github.com/brandonmay-dev/facerecognitionbrain-api/tree/main
-cd facerecognitionbrain_api
-```
-
-Install dependencies:
-
-```bash id="2fwy6m"
-npm install
-```
-
----
+1. The frontend sends auth or image requests to this API.
+2. The API validates the payload and queries PostgreSQL when needed.
+3. Passwords are hashed with `bcryptjs`.
+4. Face-detection requests are forwarded to Clarifai using a private API key stored in environment variables.
+5. The API returns user records, face-detection data, or updated entry counts back to the frontend.
 
 ## Environment Variables
 
-Create a `.env` file:
+Create a `.env` file in the project root with either local PostgreSQL settings or a deployment connection string.
 
-```env id="qg0o6d"
-PORT=3001
+### Local PostgreSQL setup
 
+```env
+CLARIFAI_PAT=your_clarifai_pat
 DB_HOST=127.0.0.1
 DB_PORT=5432
 DB_NAME=smart-brain
-DB_USER=postgres
-DB_PASSWORD=yourpassword
-
-FRONTEND_ORIGIN=http://localhost:5173
-
-CLARIFAI_PAT=your_clarifai_api_key
+DB_USER=your_postgres_user
+DB_PASSWORD=your_postgres_password
+PORT=3001
 ```
 
----
+### Deployment-style database setup
+
+```env
+CLARIFAI_PAT=your_clarifai_pat
+DATABASE_URL=your_database_url
+PORT=3001
+```
 
 ## Database Setup
 
-Make sure PostgreSQL is running.
+Make sure PostgreSQL is running, then create the database:
 
-Create database:
-
-```sql id="ux1vxt"
+```sql
 CREATE DATABASE smart-brain;
 ```
 
-Create tables:
+This API currently expects PostgreSQL tables named `users` and `login`.
 
-```sql id="t9nqv8"
+### `login`
+
+```sql
 CREATE TABLE login (
   id serial PRIMARY KEY,
   hash varchar(100) NOT NULL,
   email text UNIQUE NOT NULL
 );
+```
 
+### `users`
+
+```sql
 CREATE TABLE users (
   id serial PRIMARY KEY,
   name varchar(100),
   email text UNIQUE NOT NULL,
+  hash varchar(100) NOT NULL,
   entries bigint DEFAULT 0,
   joined timestamp NOT NULL
 );
 ```
 
----
+## Local Development
 
-## Running Locally
+Install dependencies:
 
-```bash id="0b38rk"
+```bash
+npm install
+```
+
+Run in development:
+
+```bash
+npm run dev
+```
+
+Run in production:
+
+```bash
 npm start
 ```
 
-Server runs at:
+The API runs at `http://localhost:3001`.
 
-```text id="yk1x8w"
-http://localhost:3001
-```
+## Deployment Notes
 
----
+When deploying, provide `DATABASE_URL` and `CLARIFAI_PAT` through the host environment. If the frontend domain changes, update the backend CORS allowlist to include the deployed frontend origin.
 
-## Deployment (Heroku)
+## What This Project Demonstrates
 
-Set environment variables:
+- Building REST endpoints with Express
+- Structuring a backend around a separate frontend client
+- Hashing passwords securely instead of storing plain text
+- Querying PostgreSQL through Knex
+- Protecting third-party API credentials on the server
+- Managing CORS and deployment configuration
 
-```bash id="b2x1hx"
-heroku config:set FRONTEND_ORIGIN=https://smart-brain-app-32fac457676f.herokuapp.com
-heroku config:set CLARIFAI_PAT=your_key
-```
+## Good Next Improvements
 
-Heroku automatically provides:
-
-```text id="m8q1zz"
-DATABASE_URL
-```
-
----
-
-## Troubleshooting
-
-### ECONNREFUSED 127.0.0.1:5432
-
-You're trying to connect to local DB on Heroku → use `DATABASE_URL`
-
----
-
-### 403 Forbidden (CORS)
-
-Make sure frontend URL is allowed in backend
-
----
-
-### Sign-in failing
-
-Check:
-
-* user exists in DB
-* password matches hashed value
-
----
-
-## Project Structure
-
-```bash id="2gfy7m"
-controllers/
-  signin.js
-  register.js
-  image.js
-
-server.js
-database.js
-```
-
----
-
-## Future Improvements
-
-* JWT authentication
-* Rate limiting
-* Input validation (Joi/Zod)
-* Logging & monitoring
-* Docker support
-
----
+- Add migrations and seed files
+- Add request validation middleware
+- Add automated tests for auth and image routes
+- Move the CORS allowlist into environment configuration
+- Split route logic into controllers and services for cleaner scaling
+- Add rate limiting and request logging
 
 ## Author
 
 Brandon May
-
----
 
 ## License
 
