@@ -1,9 +1,9 @@
-# FaceRecognitionBrain API
+# Smart Brain API
 
-A Node.js and Express backend API for the FaceRecognitionBrain full-stack application. This service handles authentication, PostgreSQL persistence, secure password hashing, user image-submission tracking, and server-side Clarifai face-detection requests.
+A Node.js and Express backend API for the Smart Brain full-stack application. This service handles authentication, PostgreSQL persistence, secure password hashing, user image-submission tracking, and server-side Clarifai face-detection requests.
 
-- 👉 **Frontend Repo:** [facerecognitionbrain](https://github.com/brandonmay-dev/facerecognitionbrain)
-- 👉 **Backend Repo:** [facerecognitionbrain-api](https://github.com/brandonmay-dev/facerecognitionbrain-api)
+- 👉 **Frontend Repo:** [smart-brain](https://github.com/brandonmay-dev/smart-brain)
+- 👉 **Backend Repo:** [smart-brain-api](https://github.com/brandonmay-dev/smart-brain-api)
 - 👉 **Live API:** [safe-dawn-54877-2bdeb01ab080.herokuapp.com](https://safe-dawn-54877-2bdeb01ab080.herokuapp.com/)
 
 ---
