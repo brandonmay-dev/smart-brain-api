@@ -1,9 +1,12 @@
 # Smart Brain API
 
-A Node.js and Express backend API for the Smart Brain full-stack application. This service handles authentication, PostgreSQL persistence, secure password hashing, user image-submission tracking, and server-side Clarifai face-detection requests.
+Smart Brain API is the Node.js and Express backend for the Smart Brain full-stack AI face detection application. It handles user registration, sign-in, secure password hashing, PostgreSQL persistence, user image-submission tracking, and server-side Clarifai face-detection requests.
+
+This backend keeps sensitive API credentials off the frontend and provides the REST API layer that connects the React client, PostgreSQL database, and Clarifai AI service.
 
 - 👉 **Frontend Repo:** [smart-brain](https://github.com/brandonmay-dev/smart-brain)
 - 👉 **Backend Repo:** [smart-brain-api](https://github.com/brandonmay-dev/smart-brain-api)
+- 👉 **Live Demo:** [smartbrain.brandonmay.dev](https://smartbrain.brandonmay.dev/)
 - 👉 **Live API:** [safe-dawn-54877-2bdeb01ab080.herokuapp.com](https://safe-dawn-54877-2bdeb01ab080.herokuapp.com/)
 
 ---
@@ -12,7 +15,9 @@ A Node.js and Express backend API for the Smart Brain full-stack application. Th
 
 This backend demonstrates practical server-side development beyond basic CRUD operations.
 
-It supports a real React frontend, manages user data securely, communicates with a PostgreSQL database, protects third-party API credentials on the server, and acts as the bridge between the client and Clarifai’s AI face-detection model.
+It supports a deployed React frontend, manages user data securely, communicates with a PostgreSQL database, protects third-party API credentials on the server, and acts as the bridge between the client and Clarifai’s AI face-detection model.
+
+This project shows backend work involving authentication, database operations, external API integration, CORS configuration, environment variables, and deployment-focused setup.
 
 ---
 
@@ -26,6 +31,7 @@ It supports a real React frontend, manages user data securely, communicates with
 - User-specific image submission tracking
 - Environment-based configuration for local and deployed environments
 - CORS handling for frontend/backend communication
+- Separate frontend and backend deployment architecture
 
 ---
 
@@ -44,8 +50,8 @@ It supports a real React frontend, manages user data securely, communicates with
 ## Tech Stack
 
 - **Node.js** – JavaScript runtime for backend development
-- **Express** – API routing and request handling
-- **PostgreSQL** – relational database for users and login data
+- **Express** – REST API routing and request handling
+- **PostgreSQL** – relational database for user and login data
 - **Knex** – SQL query builder for database operations
 - **bcryptjs** – password hashing and verification
 - **dotenv** – environment variable management
@@ -55,7 +61,7 @@ It supports a real React frontend, manages user data securely, communicates with
 
 ## Architecture Overview
 
-1. React frontend sends authentication or image-processing requests to the API
+1. React frontend sends authentication or image-processing requests to this API
 2. Express receives the request and routes it to the appropriate handler
 3. Knex reads from or writes to PostgreSQL
 4. Passwords are hashed and verified with `bcryptjs`
@@ -250,7 +256,8 @@ http://localhost:3001
 - SSL is enabled for hosted PostgreSQL connections
 - Clarifai credentials are kept on the server, not the frontend
 - CORS is configured to control which frontend origins can access the API
-- If the deployed frontend URL changes, update the backend CORS allowlist in `server.js`
+- The deployed frontend domain is `https://smartbrain.brandonmay.dev`
+- If the frontend URL changes, update the backend CORS allowlist in `server.js`
 
 ---
 
@@ -263,6 +270,7 @@ http://localhost:3001
 - Integrating external AI services into backend workflows
 - Managing local and production environment configuration
 - Supporting deployment-specific database behavior
+- Separating frontend and backend responsibilities in a full-stack app
 
 ---
 
